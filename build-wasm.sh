@@ -1,0 +1,1 @@
+GOOS=js GOARCH=wasm go build -o ../web/dist/build/main.wasm
