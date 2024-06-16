@@ -1,0 +1,63 @@
+name: Build and Release WASM
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.22'
+
+    - name: Build WASM
+      run: |
+        mkdir -p dist
+        ls -la
+        GOOS=js GOARCH=wasm go build -o dist/main.wasm ./main.go
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: wasm-build
+        path: dist/main.wasm
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: wasm-build
+        path: dist
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: latest-${{ github.sha }}
+        release_name: Latest release
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/main.wasm
+        asset_name: main.wasm
+        asset_content_type: application/wasm
