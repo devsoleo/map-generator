@@ -1,1 +1,1 @@
-GOOS=js GOARCH=wasm go build -o ../web/dist/build/main.wasm
+GOOS=js GOARCH=wasm go build -o ../map-generator-webui/public/build/main.wasm

@@ -1,6 +1,3 @@
-statik/dist/build/*
-!statik/dist/build/.gitkeep
-
 *.exe
 *.exe~
 *.dll
