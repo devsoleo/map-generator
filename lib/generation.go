@@ -19,7 +19,11 @@ func Generate(config Config) {
 	beta := 2.0
 	n := int32(3)
 
-	seed := rand.NewSource(time.Now().UnixNano()).Int63()
+	seed := config.Seed
+
+	if config.Seed == 0 {
+		seed = rand.NewSource(time.Now().UnixNano()).Int63()
+	}
 
 	p := perlin.NewPerlin(alpha, beta, n, seed)
 
